@@ -1,0 +1,23 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "description": "simple CRUD api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alivar391/CRUD-api.git"
+  },
+  "keywords": [
+    "CRUD",
+    "api"
+  ],
+  "author": "Alivar391",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alivar391/CRUD-api/issues"
+  },
+  "homepage": "https://github.com/alivar391/CRUD-api#readme"
+}
