@@ -1,4 +1,4 @@
-import { findAll, findById, create } from "../models/usersModel";
+import { findAll, findById, create, update, IUser } from "../models/usersModel";
 import { ServerResponse, IncomingMessage } from "http";
 import { getPostData } from "../utils";
 
@@ -53,6 +53,38 @@ export const createUser = async (req: IncomingMessage, res: ServerResponse) => {
     const newUser = await create(user);
     res.writeHead(201, { "Content-Type": "application/json" });
     res.end(JSON.stringify(newUser));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// update user
+// PUT api/users/id
+export const updateUser = async (
+  req: IncomingMessage,
+  res: ServerResponse,
+  id: string,
+) => {
+  try {
+    const userToUpdate = await findById(id);
+
+    if (!userToUpdate) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "User Not Found" }));
+    } else {
+      const body = await getPostData(req);
+
+      const { username, age, hobbies } = JSON.parse(body) as IUser;
+      const userData = {
+        username: username || userToUpdate.username,
+        age: age || userToUpdate.age,
+        hobbies: hobbies || userToUpdate.hobbies,
+      };
+
+      const updatedUser = await update(id, userData);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(updatedUser));
+    }
   } catch (error) {
     console.log(error);
   }
