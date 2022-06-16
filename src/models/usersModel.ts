@@ -1,4 +1,4 @@
-const users = require("../data.json");
+let users = require("../data.json");
 import { v4 as uuidv4 } from "uuid";
 
 export interface IUser {
@@ -40,5 +40,12 @@ export const update = (id: string, user: ICreateUser) => {
     const index = users.findIndex((user: IUser) => user.id === id);
     users[index] = { id, ...user };
     resolve(users[index]);
+  });
+};
+
+export const remove = (id: string) => {
+  return new Promise((resolve, reject) => {
+    users = users.filter((user: IUser) => user.id !== id);
+    resolve(id);
   });
 };

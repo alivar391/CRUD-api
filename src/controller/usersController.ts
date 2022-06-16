@@ -1,4 +1,11 @@
-import { findAll, findById, create, update, IUser } from "../models/usersModel";
+import {
+  findAll,
+  findById,
+  create,
+  update,
+  remove,
+  IUser,
+} from "../models/usersModel";
 import { ServerResponse, IncomingMessage } from "http";
 import { getPostData } from "../utils";
 
@@ -84,6 +91,29 @@ export const updateUser = async (
       const updatedUser = await update(id, userData);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(updatedUser));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// delete one user
+// DELETE api/users/:id
+export const deleteUser = async (
+  req: IncomingMessage,
+  res: ServerResponse,
+  id: string,
+) => {
+  try {
+    const user = await findById(id);
+
+    if (!user) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "User Not Found" }));
+    } else {
+      await remove(id);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: `Product ${id} removed` }));
     }
   } catch (error) {
     console.log(error);
