@@ -1,5 +1,6 @@
 import { findAll, findById, create } from "../models/usersModel";
 import { ServerResponse, IncomingMessage } from "http";
+import { getPostData } from "../utils";
 
 // get All users
 // GET api/users
@@ -40,24 +41,18 @@ export const getUser = async (
 // POST api/users
 export const createUser = async (req: IncomingMessage, res: ServerResponse) => {
   try {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
+    const body = await getPostData(req);
 
-    req.on("end", async () => {
-      const { username, age, hobbies } = JSON.parse(body);
+    const { username, age, hobbies } = JSON.parse(body);
+    const user = {
+      username,
+      age,
+      hobbies,
+    };
 
-      const user = {
-        username,
-        age,
-        hobbies,
-      };
-
-      const newUser = await create(user);
-      res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(newUser));
-    });
+    const newUser = await create(user);
+    res.writeHead(201, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(newUser));
   } catch (error) {
     console.log(error);
   }
