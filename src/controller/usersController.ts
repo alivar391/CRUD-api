@@ -4,7 +4,6 @@ import {
   create,
   update,
   remove,
-  IUser,
   ICreateUser,
 } from "../models/usersModel";
 import { ServerResponse, IncomingMessage } from "http";
@@ -54,26 +53,35 @@ export const getUser = async (
 // POST api/users
 export const createUser = async (req: IncomingMessage, res: ServerResponse) => {
   try {
-    const body = await getPostData(req);
-    const userInfo: ICreateUser = JSON.parse(body);
-    if (validateNewUserInfo(userInfo)) {
-      const { username, age, hobbies } = userInfo;
-      const user = {
-        username,
-        age,
-        hobbies,
-      };
-
-      const newUser = await create(user);
-      res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(newUser));
-    } else {
+    if (req.headers["content-type"] !== "application/json") {
       res.writeHead(400, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
-          message: "Necessary field unavailable of have wrong types",
+          message: "Bad request: content-type is not application/json",
         }),
       );
+    } else {
+      const body = await getPostData(req);
+      const userInfo: ICreateUser = JSON.parse(body);
+      if (validateNewUserInfo(userInfo)) {
+        const { username, age, hobbies } = userInfo;
+        const user = {
+          username,
+          age,
+          hobbies,
+        };
+
+        const newUser = await create(user);
+        res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(newUser));
+      } else {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            message: "Necessary field unavailable of have wrong types",
+          }),
+        );
+      }
     }
   } catch (error) {
     console.log(error);
@@ -88,24 +96,46 @@ export const updateUser = async (
   id: string,
 ) => {
   try {
-    const userToUpdate = await findById(id);
-
-    if (!userToUpdate) {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "User Not Found" }));
+    if (!uuidValidateV4(id)) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "UserId Not uuidv4" }));
+    } else if (req.headers["content-type"] !== "application/json") {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          message: "Bad request: content-type is not application/json",
+        }),
+      );
     } else {
-      const body = await getPostData(req);
+      const userToUpdate = await findById(id);
 
-      const { username, age, hobbies } = JSON.parse(body) as IUser;
-      const userData = {
-        username: username || userToUpdate.username,
-        age: age || userToUpdate.age,
-        hobbies: hobbies || userToUpdate.hobbies,
-      };
+      if (!userToUpdate) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "User Not Found" }));
+      } else {
+        const body = await getPostData(req);
+        const userInfo: ICreateUser = JSON.parse(body);
 
-      const updatedUser = await update(id, userData);
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(updatedUser));
+        if (validateNewUserInfo(userInfo)) {
+          const { username, age, hobbies } = userInfo;
+          const userData = {
+            username: username || userToUpdate.username,
+            age: age || userToUpdate.age,
+            hobbies: hobbies || userToUpdate.hobbies,
+          };
+
+          const updatedUser = await update(id, userData);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(updatedUser));
+        } else {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Necessary field unavailable of have wrong types",
+            }),
+          );
+        }
+      }
     }
   } catch (error) {
     console.log(error);
@@ -120,15 +150,20 @@ export const deleteUser = async (
   id: string,
 ) => {
   try {
-    const user = await findById(id);
-
-    if (!user) {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "User Not Found" }));
+    if (!uuidValidateV4(id)) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "UserId Not uuidv4" }));
     } else {
-      await remove(id);
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: `Product ${id} removed` }));
+      const user = await findById(id);
+
+      if (!user) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "User Not Found" }));
+      } else {
+        await remove(id);
+        res.writeHead(204, { "Content-Type": "application/json" });
+        res.end();
+      }
     }
   } catch (error) {
     console.log(error);
