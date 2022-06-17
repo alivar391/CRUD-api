@@ -1,9 +1,13 @@
 [
-  {"id": "123",
+  {"id": "2f0df6e5-2049-47d7-bd77-5901e5e6fc7e",
   "username": "Anton",
   "age": 32,
   "hobbies": []},
-  {"id": "222",
+  {"id": "5bf1bcb4-672b-4e00-8aad-054167152c9c",
+  "username": "Baton",
+  "age": 35,
+  "hobbies": ["drink", "smoke"]},
+  {"id": "123",
   "username": "Baton",
   "age": 35,
   "hobbies": ["drink", "smoke"]}

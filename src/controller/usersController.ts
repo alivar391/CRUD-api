@@ -7,7 +7,7 @@ import {
   IUser,
 } from "../models/usersModel";
 import { ServerResponse, IncomingMessage } from "http";
-import { getPostData } from "../utils";
+import { getPostData, uuidValidateV4 } from "../utils";
 
 // get All users
 // GET api/users
@@ -35,6 +35,9 @@ export const getUser = async (
     if (!user) {
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ message: "User Not Found" }));
+    } else if (!uuidValidateV4(id)) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ message: "UserId Not uuidv4" }));
     } else {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(user));

@@ -1,3 +1,5 @@
+import { validate as uuidValidate } from "uuid";
+import { version as uuidVersion } from "uuid";
 import { IncomingMessage } from "http";
 
 export const getPostData = (req: IncomingMessage): Promise<string> => {
@@ -15,4 +17,8 @@ export const getPostData = (req: IncomingMessage): Promise<string> => {
       reject(error);
     }
   });
+};
+
+export const uuidValidateV4 = (uuid: string): boolean => {
+  return uuidValidate(uuid) && uuidVersion(uuid) === 4;
 };
