@@ -5,9 +5,10 @@ import {
   update,
   remove,
   IUser,
+  ICreateUser,
 } from "../models/usersModel";
 import { ServerResponse, IncomingMessage } from "http";
-import { getPostData, uuidValidateV4 } from "../utils";
+import { getPostData, uuidValidateV4, validateNewUserInfo } from "../utils";
 
 // get All users
 // GET api/users
@@ -30,17 +31,19 @@ export const getUser = async (
   id: string,
 ) => {
   try {
-    const user = await findById(id);
-
-    if (!user) {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "User Not Found" }));
-    } else if (!uuidValidateV4(id)) {
+    if (!uuidValidateV4(id)) {
       res.writeHead(400, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ message: "UserId Not uuidv4" }));
     } else {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(user));
+      const user = await findById(id);
+
+      if (!user) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "User Not Found" }));
+      } else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(user));
+      }
     }
   } catch (error) {
     console.log(error);
@@ -52,17 +55,26 @@ export const getUser = async (
 export const createUser = async (req: IncomingMessage, res: ServerResponse) => {
   try {
     const body = await getPostData(req);
+    const userInfo: ICreateUser = JSON.parse(body);
+    if (validateNewUserInfo(userInfo)) {
+      const { username, age, hobbies } = userInfo;
+      const user = {
+        username,
+        age,
+        hobbies,
+      };
 
-    const { username, age, hobbies } = JSON.parse(body);
-    const user = {
-      username,
-      age,
-      hobbies,
-    };
-
-    const newUser = await create(user);
-    res.writeHead(201, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(newUser));
+      const newUser = await create(user);
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(newUser));
+    } else {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          message: "Necessary field unavailable of have wrong types",
+        }),
+      );
+    }
   } catch (error) {
     console.log(error);
   }

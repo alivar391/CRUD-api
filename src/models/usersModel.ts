@@ -8,7 +8,7 @@ export interface IUser {
   hobbies: string[];
 }
 
-interface ICreateUser {
+export interface ICreateUser {
   username: string;
   age: number;
   hobbies: string[];
