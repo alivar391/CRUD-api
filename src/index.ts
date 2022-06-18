@@ -8,7 +8,7 @@ import {
 } from "./controller/usersController";
 import "dotenv/config";
 
-const server = http.createServer((req, res) => {
+export const server = http.createServer((req, res) => {
   if (req.url === "/api/users" && req.method === "GET") {
     getUsers(req, res);
   } else if (
