@@ -19,6 +19,12 @@ export const getUsers = async (req: IncomingMessage, res: ServerResponse) => {
     res.end(JSON.stringify(users));
   } catch (error) {
     console.log(error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+    );
   }
 };
 
@@ -46,6 +52,12 @@ export const getUser = async (
     }
   } catch (error) {
     console.log(error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+    );
   }
 };
 
@@ -78,13 +90,19 @@ export const createUser = async (req: IncomingMessage, res: ServerResponse) => {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(
           JSON.stringify({
-            message: "Necessary field unavailable of have wrong types",
+            message: "Necessary field unavailable or have wrong types",
           }),
         );
       }
     }
   } catch (error) {
     console.log(error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+    );
   }
 };
 
@@ -131,7 +149,7 @@ export const updateUser = async (
           res.writeHead(400, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              message: "Necessary field unavailable of have wrong types",
+              message: "Necessary field unavailable or have wrong types",
             }),
           );
         }
@@ -139,6 +157,12 @@ export const updateUser = async (
     }
   } catch (error) {
     console.log(error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+    );
   }
 };
 
@@ -167,5 +191,11 @@ export const deleteUser = async (
     }
   } catch (error) {
     console.log(error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        message: "Internal server error",
+      }),
+    );
   }
 };

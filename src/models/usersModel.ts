@@ -1,4 +1,4 @@
-let users = require("../data.json");
+let users = <any>[];
 import { v4 as uuidv4 } from "uuid";
 
 export interface IUser {

@@ -6,7 +6,6 @@ import {
   updateUser,
   deleteUser,
 } from "./controller/usersController";
-// import * as dotenv from "dotenv";
 import "dotenv/config";
 
 const server = http.createServer((req, res) => {
@@ -17,6 +16,7 @@ const server = http.createServer((req, res) => {
     req.method === "GET"
   ) {
     const id = req.url.split("/")[3];
+    console.log(req.url.split("/"), id);
     getUser(req, res, id);
   } else if (req.url === "/api/users" && req.method === "POST") {
     createUser(req, res);
