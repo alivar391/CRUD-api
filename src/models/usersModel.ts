@@ -1,0 +1,51 @@
+let users = <any>[];
+import { v4 as uuidv4 } from "uuid";
+
+export interface IUser {
+  id: string;
+  username: string;
+  age: number;
+  hobbies: string[];
+}
+
+export interface ICreateUser {
+  username: string;
+  age: number;
+  hobbies: string[];
+}
+
+export const findAll = () => {
+  return new Promise((resolve, reject) => {
+    resolve(users);
+  });
+};
+
+export const findById = (id: string): Promise<ICreateUser> => {
+  return new Promise((resolve, reject) => {
+    const user = users.find((user: IUser) => user.id === id);
+    resolve(user);
+  });
+};
+
+export const create = (user: ICreateUser) => {
+  return new Promise((resolve, reject) => {
+    const newUser = { id: uuidv4(), ...user };
+    users.push(newUser);
+    resolve(newUser);
+  });
+};
+
+export const update = (id: string, user: ICreateUser) => {
+  return new Promise((resolve, reject) => {
+    const index = users.findIndex((user: IUser) => user.id === id);
+    users[index] = { id, ...user };
+    resolve(users[index]);
+  });
+};
+
+export const remove = (id: string) => {
+  return new Promise((resolve, reject) => {
+    users = users.filter((user: IUser) => user.id !== id);
+    resolve(id);
+  });
+};
