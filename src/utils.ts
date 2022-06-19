@@ -33,7 +33,8 @@ export const validateNewUserInfo = (newUser: ICreateUser) => {
     if (
       typeof newUser.username === "string" &&
       typeof newUser.age === "number" &&
-      Array.isArray(newUser.hobbies)
+      Array.isArray(newUser.hobbies) &&
+      newUser.hobbies.every((item) => typeof item === "string")
     ) {
       return true;
     } else return false;

@@ -19,7 +19,7 @@ const notValidUser = {
 };
 
 const badData = "some string";
-
+afterEach(() => server.close());
 describe("Test scenario 1", () => {
   afterAll(() => server.close());
 
@@ -123,5 +123,106 @@ describe("Test scenario 2. Test errors", () => {
       .send(badData);
     expect(res.statusCode).toBe(500);
     expect(res.body.message).toBe("Internal server error");
+  });
+
+  it("DELETE api/users/{userId} request, we delete the created object by id (confirmation of successful deletion is expected)", async () => {
+    const res1 = await request(server).delete(`/api/users/${id1}`);
+    expect(res1.statusCode).toBe(204);
+    expect(res1.body).toBe("");
+    const res2 = await request(server).delete(`/api/users/${id2}`);
+    expect(res2.statusCode).toBe(204);
+    expect(res2.body).toBe("");
+  });
+});
+
+//Test scenario 3
+
+describe("Test scenario 3", () => {
+  afterAll(() => server.close());
+
+  const user1 = {
+    username: "Alivar391",
+    age: 31,
+    hobbies: ["traveling", "bike"],
+  };
+
+  const user2 = {
+    username: "Alivar392",
+    age: 32,
+    hobbies: ["bike"],
+  };
+
+  const user3 = {
+    username: "Alivar393",
+    age: 33,
+    hobbies: ["traveling"],
+  };
+
+  let id1: string;
+  let id2: string;
+  let id3: string;
+
+  it("Get all records with a GET api/users request (an empty array is expected)", async () => {
+    const res = await request(server).get("/api/users");
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBe(0);
+  });
+
+  it("Three new objects are created by a POST api/users request (a response containing newly created record is expected)", async () => {
+    const res1 = await request(server).post("/api/users").send(user1);
+    id1 = res1.body.id;
+    expect(res1.statusCode).toBe(201);
+    const res2 = await request(server).post("/api/users").send(user2);
+    id2 = res2.body.id;
+    expect(res2.statusCode).toBe(201);
+    const res3 = await request(server).post("/api/users").send(user3);
+    id3 = res3.body.id;
+    expect(res3.statusCode).toBe(201);
+  });
+
+  it("Get all records with a GET api/users request (array with length 3 is expected)", async () => {
+    const res = await request(server).get("/api/users");
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toEqual(3);
+    expect(res.body[0].username).toBe("Alivar391");
+    expect(res.body[1].username).toBe("Alivar392");
+    expect(res.body[2].username).toBe("Alivar393");
+  });
+
+  it("DELETE api/users/{userId} request, we delete the created object by id (confirmation of successful deletion is expected)", async () => {
+    const res = await request(server).delete(`/api/users/${id1}`);
+    expect(res.statusCode).toBe(204);
+    expect(res.body).toBe("");
+  });
+
+  it("Get all records with a GET api/users request (array with length 2 is expected)", async () => {
+    const res = await request(server).get("/api/users");
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toEqual(2);
+    expect(res.body[0].username).toBe("Alivar392");
+    expect(res.body[1].username).toBe("Alivar393");
+  });
+
+  it("Try to update deleted user with a PUT api/users/{userId} request with text data(expected 404 status code with message)", async () => {
+    const res = await request(server).put(`/api/users/${id1}`).send(user1);
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("User Not Found");
+  });
+
+  it("DELETE api/users/{userId} request, we delete the created object by id (confirmation of successful deletion is expected)", async () => {
+    const res1 = await request(server).delete(`/api/users/${id2}`);
+    expect(res1.statusCode).toBe(204);
+    expect(res1.body).toBe("");
+    const res2 = await request(server).delete(`/api/users/${id3}`);
+    expect(res2.statusCode).toBe(204);
+    expect(res2.body).toBe("");
+  });
+
+  it("Get all records with a GET api/users request (an empty array is expected)", async () => {
+    const res = await request(server).get("/api/users");
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBe(0);
   });
 });
